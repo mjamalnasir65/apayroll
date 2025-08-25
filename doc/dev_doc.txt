@@ -1,0 +1,130 @@
+
+# 📱 PWA Development Document – Foreign Worker Payroll PWA
+**Date:** 2025-08-25
+
+---
+
+## 1. 🌐 Overview
+
+This PWA is designed to empower foreign workers in Malaysia by providing a platform to track salary payments, maintain personal payroll records, and facilitate salary collection through wallet-based transactions. It functions as a **worker-centric compliance tool** while also serving as a **marketing funnel** for wallets, APS agencies, and future employer-side services.
+
+---
+
+## 2. 🎯 Objectives
+
+- Allow foreign workers to self-register and subscribe to payroll tracking service.
+- Log monthly salary expectations and payment receipts.
+- Serve as communication bridge between workers and employers.
+- Collect subscription fee via wallet-based payment (RM60/year).
+- Create income opportunities from wallet partners, APS License C, and optional employer dashboard.
+- Remain legally safe by avoiding fund custody and focusing on user-initiated transactions.
+
+---
+
+## 3. 🛠️ Tech Stack
+
+- **Frontend**: HTML5, TailwindCSS (via CDN), JavaScript (DOM-based)
+- **Backend (optional)**: PHP + MySQL (for admin and employer dashboard)
+- **Hosting**: Shared hosting or LAMP stack server
+- **Integration-ready**: API folder for SDKs (e.g. M1Pay, Finexus, Merchantrade, etc.)
+- **Framework (UI scaffold)**: No framework or optional Framework7 for future native builds
+
+---
+
+## 4. 📂 Folder & File Structure
+
+```
+/foreignworker-pwa/
+│
+├── index.html                  # Landing + login/register screen
+├── dashboard.html              # Main worker dashboard (wallet info, salary tracker)
+├── upload-receipt.html         # Upload payment proof
+├── employer-upload.html        # Optional employer page to submit proof
+├── admin/
+│   ├── login.html
+│   ├── dashboard.php           # View receipts, filter by worker/employer
+│   └── export.php              # CSV export logic
+│
+├── js/
+│   ├── app.js                  # App logic (session, routing)
+│   ├── dashboard.js
+│   └── receipt-upload.js
+│
+├── css/
+│   └── tailwind.css            # Tailwind CDN or generated build
+│
+├── api-sdk/                    # Placeholder for wallet SDK integrations
+│   └── m1pay/
+│   └── finexus/
+│
+├── assets/                     # Images, logos, QR flyers
+├── db/
+│   └── schema.sql              # User, Receipt, Employer tables
+└── README.md
+```
+
+---
+
+## 5. 👤 User Roles
+
+### 🧍‍♂️ Workers
+- Register with personal info, wallet ID, permit/visa details
+- View monthly expected salary
+- Upload receipt of salary received
+- Track past months
+- Pay RM60/year via manual wallet payment
+
+### 🧑‍💼 Employers (Free Tier)
+- View list of their workers (via link)
+- Upload salary receipt (worker ID pre-filled)
+- Receive monthly reminders
+
+### 👨‍💻 Admin (APS)
+- Review all worker submissions
+- Filter by employer, month, worker
+- Export reports for audit
+- Manage subscription payments
+
+---
+
+## 6. 🔐 Compliance & Legal Notes
+
+- No salary is handled inside app — all payments are user-initiated
+- Workers pay directly to wallet account (APS or service provider)
+- Receipts are voluntary proof for record keeping
+- No financial license required; app acts as service aggregator
+- Legal backing via **retainer agreement** between worker and APS License C agency
+
+---
+
+## 7. 📈 Revenue Streams
+
+| Source     | Model                    |
+|------------|--------------------------|
+| Workers    | RM60/year subscription   |
+| Wallets    | RM1–2/user or RM share   |
+| APS        | RM20 onboarding + SaaS   |
+| Employers  | Premium dashboard        |
+
+---
+
+## 8. ✅ MVP Milestones
+
+- [ ] Build worker PWA UI (register, dashboard, upload)
+- [ ] Create manual admin panel
+- [ ] Receipt verification view
+- [ ] Prepare onboarding QR flyers/posters
+- [ ] Approach wallet partners for sandbox access
+- [ ] Deploy on shared hosting
+
+---
+
+## 9. 🚀 Expansion Opportunities
+
+- Add employer dashboards (premium)
+- Add contract reminders (permit expiry, visa updates)
+- Connect to wallet APIs for salary check automation
+- Add WhatsApp chatbot + push alerts
+
+---
+
