@@ -1,0 +1,99 @@
+
+PWA DEVELOPMENT DOCUMENT
+
+========================
+1. OVERVIEW
+========================
+This PWA is a salary collection and payroll coordination system designed for foreign workers in Malaysia. It acts as a service bridge between workers and their employers by allowing workers to track and verify payments, and employers to submit salary proofs, all without directly integrating third-party payment modules.
+
+========================
+2. OBJECTIVE
+========================
+- Empower foreign workers with transparency and control over salary tracking.
+- Offer employers a compliant and organized dashboard to manage salary submissions.
+- Serve as a neutral third-party payroll dashboard to avoid direct legal or financial liabilities.
+- Monetize via worker subscriptions, agency partnerships, and potential wallet collaborations.
+
+========================
+3. TECH STACK
+========================
+- Frontend: HTML5, TailwindCSS, JavaScript (Vanilla or modular)
+- Backend: PHP 8+, MySQL (InnoDB)
+- Hosting: Local WAMP during development; future deployment on HTTPS web host.
+- API/Integration: Payment gateway SDK/API (M1Pay, Finexus), optional later
+- Architecture: PWA-first (with option to compile native app later via Capacitor or similar tools)
+
+========================
+4. USER ROLES
+========================
+1. Worker:
+   - Register and manage salary dashboard
+   - View receipts, history, payment status
+   - Submit queries/issues to agency
+   - Subscribe to app service (RM60/year)
+2. Employer:
+   - Login to dedicated dashboard
+   - View worker list & payment statuses
+   - Upload salary receipts (single/batch)
+   - Access analytics (locked for premium)
+   - Export salary reports (locked)
+3. Admin:
+   - Approve/reject employer registrations
+   - Manage flagged accounts
+   - Monitor usage and subscriptions
+
+========================
+5. EMPLOYER DASHBOARD FEATURES
+========================
+| Feature                             | Access Level |
+|-------------------------------------|--------------|
+| Employer Sign-in                    | Basic        |
+| Worker Roster View                  | Basic        |
+| Upload Salary Receipts              | Basic        |
+| Salary Verification View            | Basic        |
+| Contract Expiry Tracker             | Premium      |
+| Export Reports (CSV/PDF)            | Premium      |
+| Salary Batch Upload                 | Premium      |
+| Auto Reminder Configuration         | Premium      |
+
+========================
+6. FEATURE LOCKING LOGIC
+========================
+- Each user account (including employer) has a 'subscription_status' field in DB.
+- Premium features only unlocked if subscription_status == 'active'.
+- UI will hide or overlay 'Upgrade to Unlock' tag for locked features.
+- Backend route guard will also enforce role & plan checking.
+
+========================
+7. FOLDER STRUCTURE
+========================
+project-root/
+├── auth/
+│   ├── login.html
+│   ├── register.html
+│   └── forgot.html
+├── worker/
+│   ├── dashboard.html
+│   ├── history.html
+│   └── subscription.html
+├── employer/
+│   ├── dashboard.html
+│   ├── upload.html
+│   ├── workers.html
+│   ├── premium.html
+│   └── report.html
+├── admin/
+│   ├── dashboard.html
+│   └── manage.html
+├── assets/
+│   ├── css/
+│   ├── js/
+│   └── images/
+└── api/
+    ├── auth.php
+    ├── worker.php
+    ├── employer.php
+    ├── salary.php
+    └── subscription.php
+
+
