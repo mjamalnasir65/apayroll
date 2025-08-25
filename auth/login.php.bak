@@ -1,0 +1,90 @@
+<?php
+require_once '../includes/functions.php';
+require_once '../includes/security.php';
+
+if (isLoggedIn()) {
+    redirect('');
+}
+
+// Check for session timeout message
+$error = '';
+if (isset($_GET['timeout'])) {
+    $error = 'Your session has expired. Please login again.';
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $error = 'Invalid request';
+    } else {
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'] ?? '';
+        
+        if ($email && $password) {
+            $db = Database::getInstance();
+            
+            // Check login attempts
+            $stmt = $db->query(
+                "SELECT COUNT(*) as attempts, MAX(attempt_time) as last_attempt 
+                FROM login_attempts 
+                WHERE email = ? AND attempt_time > DATE_SUB(NOW(), INTERVAL 15 MINUTE)",
+                [$email]
+            );
+            $attempts = $stmt->fetch();
+            
+            if ($attempts['attempts'] >= MAX_LOGIN_ATTEMPTS) {
+                $error = 'Too many login attempts. Please try again later.';
+                logActivity('login_blocked', ['email' => $email, 'reason' => 'max_attempts']);
+            } else {
+                $stmt = $db->query(
+                    "SELECT u.*, COALESCE(w.subscription_status, 'none') as sub_status 
+                     FROM users u 
+                     LEFT JOIN worker w ON u.user_id = w.user_id 
+                     WHERE u.email = ? AND u.status = 'active'",
+                    [$email]
+                );
+                
+                if ($user = $stmt->fetch()) {
+                    if (password_verify($password, $user['password_hash'])) {
+                        // Clear login attempts
+                        $db->query(
+                            "DELETE FROM login_attempts WHERE email = ?",
+                            [$email]
+                        );
+
+                        $_SESSION['user_id'] = $user['user_id'];
+                        $_SESSION['role'] = $user['role'];
+                        $_SESSION['sub_status'] = $user['sub_status'];
+                        $_SESSION['LAST_ACTIVITY'] = time();
+                        
+                        // Update last login and log activity
+                        $db->query(
+                            "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE user_id = ?",
+                            [$user['user_id']]
+                        );
+                        
+                        logActivity('login_success', null, $user['user_id']);
+                        
+                        // Check for notifications
+                        $notifications = getUnreadNotifications($user['user_id']);
+                        if (!empty($notifications)) {
+                            $_SESSION['has_notifications'] = true;
+                        }
+                        
+                        redirect('');
+                    } else {
+                        // Log failed attempt
+                        $db->query(
+                            "INSERT INTO login_attempts (email, ip_address, user_agent) VALUES (?, ?, ?)",
+                            [$email, $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']]
+                        );
+                        logActivity('login_failed', ['email' => $email, 'reason' => 'invalid_password']);
+                        $error = 'Invalid credentials';
+                    }
+                } else {
+                    $error = 'Invalid credentials';
+                }
+            }
+        }
+    }
+}
+?>
